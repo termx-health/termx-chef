@@ -1,4 +1,7 @@
 
+stages:
+  - build
+
 build_chef:
   stage: build
   image: docker:stable
@@ -8,5 +11,5 @@ build_chef:
     - docker build -t docker.kodality.com/fsh-chef:latest .
     - docker push docker.kodality.com/fsh-chef:latest
   only:
-    - main
+    - master
 
