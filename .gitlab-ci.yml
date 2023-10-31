@@ -1,0 +1,12 @@
+
+build_chef:
+  stage: build
+  image: docker:stable
+  before_script:
+    - docker login -u $KODALITY_NEXUS_USER -p $KODALITY_NEXUS_PASSWORD docker.kodality.com
+  script:
+    - docker build -t docker.kodality.com/fsh-chef:latest .
+    - docker push docker.kodality.com/fsh-chef:latest
+  only:
+    - main
+
