@@ -1,7 +1,10 @@
 const express = require("express");
+var cors = require('cors')
 const app = express();
 app.use(express.json({limit: '1000mb'}));
 const port = 3000;
+
+app.use(cors())
 
 const {sushiClient} = require('fsh-sushi');
 const {gofshClient} = require('gofsh');

@@ -9,11 +9,12 @@
   "author": "Kodality",
   "license": "ISC",
   "dependencies": {
+    "cors": "^2.8.5",
+    "eslint-webpack-plugin": "^4.0.1",
     "express": "^4.18.2",
     "fsh-sushi": "^3.4.0",
     "gofsh": "^2.1.1",
     "webpack": "^5.88.2",
-    "webpack-cli": "^5.1.4",
-    "eslint-webpack-plugin": "^4.0.1"
+    "webpack-cli": "^5.1.4"
   }
 }
