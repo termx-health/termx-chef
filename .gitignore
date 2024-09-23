@@ -1,14 +1,8 @@
-# compiled output
-/dist
-/tmp
-/out-tsc
-src/styles/build
-
 # dependencies
 /node_modules
 
 # IDEs and editors
-/.idea
+.idea
 .project
 .classpath
 .c9/

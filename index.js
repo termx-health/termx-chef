@@ -1,10 +1,18 @@
 const express = require("express");
 var cors = require('cors')
+
+const { fail } = require('./utils')
+const fsh2fhirRouter = require('./fsh2fhir')
+const fhir2fshRouter = require('./fhir2fsh')
+
 const app = express();
-app.use(express.json({limit: '1000mb'}));
+app.use(express.json({ type: ['application/json', 'application/fhir+json'], limit: '1000mb'}));
+app.use(express.text({ type: ['application/fsh'], limit: '1000mb'}));
 const port = 3000;
 
 app.use(cors())
+app.use(fsh2fhirRouter)
+app.use(fhir2fshRouter)
 
 const {sushiClient} = require('fsh-sushi');
 const {gofshClient} = require('gofsh');
@@ -47,6 +55,3 @@ app.post("/fhir2fsh", (req, res) => {
 
 });
 
-function fail(res, err) {
-  res.status(500).send(err)
-}
