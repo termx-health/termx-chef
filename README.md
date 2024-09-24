@@ -2,13 +2,13 @@
 
 ## Content
 
-[Convert from FSH to FHIR](#-Convert-from-FSH-to-FHIR)
+[Convert from FSH to FHIR](#Convert-from-FSH-to-FHIR)
 
-[Convert from FHIR to FSH](#-Convert-from-FHIR-to-FSH)
+[Convert from FHIR to FSH](#Convert-from-FHIR-to-FSH)
 
-[Convert from FSH to FHIR v2](#-convert-from-fsh-to-fhir-v2)
+[Convert from FSH to FHIR v2](#convert-from-fsh-to-fhir-v2)
 
-[Convert from FHIR to FSH v2](#-convert-from-fhir-to-fsh-v2)
+[Convert from FHIR to FSH v2](#convert-from-fhir-to-fsh-v2)
 
 
 
