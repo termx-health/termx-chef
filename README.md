@@ -12,6 +12,45 @@
 
 
 
+## Quick start
+
+FSH to JSON:
+
+```bash
+curl -X POST http://localhost:3000/fsh2fhir \
+  -H "Content-Type: application/json" \
+  -d '{
+    "fsh": "Profile: MyPatient\nParent: Patient\n* name 1..1",
+    "options": {}
+  }'
+```
+
+JSON to FSH:
+
+```bash
+curl -X POST http://localhost:3000/fhir2fsh \
+  -H "Content-Type: application/json" \
+  -d '{
+    "fhir": [{"resourceType": "StructureDefinition", "id": "MyPatient", "url": "http://example.org/StructureDefinition/MyPatient", "name": "MyPatient", "status": "draft", "kind": "resource", "abstract": false, "type": "Patient", "baseDefinition": "http://hl7.org/fhir/StructureDefinition/Patient", "derivation": "constraint"}],
+    "options": {}
+  }'
+```
+
+## Docker
+
+Build and run:
+
+```bash
+docker build -t termx-chef .
+docker run -p 3000:3000 termx-chef
+```
+
+Custom FHIR package registry:
+
+```bash
+docker run -p 3000:3000 -e FPL_REGISTRY=https://my-registry.example.com termx-chef
+```
+
 #### Demo:
 
 - https://demo.termx.org/chef/fsh2fhir
