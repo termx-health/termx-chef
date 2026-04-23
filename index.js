@@ -8,7 +8,7 @@ const fhir2fshRouter = require('./fhir2fsh')
 const app = express();
 app.use(express.json({ type: ['application/json', 'application/fhir+json'], limit: '1000mb'}));
 app.use(express.text({ type: ['application/fsh'], limit: '1000mb'}));
-const port = 3000;
+const port = parseInt(process.env.PORT, 10) || 3000;
 
 app.use(cors())
 app.use(fsh2fhirRouter)
