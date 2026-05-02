@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>fsh-chef &mdash; FSH &harr; FHIR conversion service</title>
+  <style>
+    :root {
+      --primary: #1464C0;
+      --bg: #f7f9fc;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --code-bg: #0f172a;
+      --code-text: #e2e8f0;
+      --border: #e5e7eb;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    header {
+      background: var(--primary);
+      color: #fff;
+      padding: 2rem 1.5rem;
+    }
+    header .wrap { max-width: 960px; margin: 0 auto; }
+    header h1 { margin: 0 0 .5rem; font-size: 2rem; }
+    header p { margin: 0; opacity: .9; }
+    main { max-width: 960px; margin: 0 auto; padding: 2rem 1.5rem; }
+    section { margin-bottom: 2.5rem; }
+    h2 {
+      font-size: 1.4rem;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: .35rem;
+      margin-top: 0;
+    }
+    h3 { font-size: 1.1rem; margin-top: 1.5rem; }
+    code {
+      font-family: "SFMono-Regular", Menlo, Consolas, monospace;
+      font-size: .9em;
+      background: #eef2f7;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    pre {
+      background: var(--code-bg);
+      color: var(--code-text);
+      padding: 1rem;
+      border-radius: 6px;
+      overflow-x: auto;
+      font-size: .85rem;
+    }
+    pre code { background: transparent; padding: 0; color: inherit; }
+    .endpoint {
+      display: inline-block;
+      background: #eef2f7;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2px 8px;
+      font-family: "SFMono-Regular", Menlo, Consolas, monospace;
+      font-size: .85rem;
+    }
+    .badge {
+      display: inline-block;
+      background: #10b981;
+      color: #fff;
+      font-size: .75rem;
+      padding: 2px 8px;
+      border-radius: 999px;
+      margin-left: .4rem;
+      vertical-align: middle;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      font-size: .9rem;
+    }
+    th, td {
+      text-align: left;
+      padding: .5rem .75rem;
+      border-bottom: 1px solid var(--border);
+    }
+    th { background: #eef2f7; }
+    footer {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 1.5rem;
+      color: var(--muted);
+      font-size: .85rem;
+      border-top: 1px solid var(--border);
+    }
+    a { color: var(--primary); }
+  </style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>fsh-chef</h1>
+    <p>REST API for converting between FHIR Shorthand (FSH) and FHIR resources.</p>
+  </div>
+</header>
+
+<main>
+  <section>
+    <h2>Project goal</h2>
+    <p>
+      <strong>fsh-chef</strong> is a lightweight Express service that wraps the
+      <a href="https://fshschool.org/docs/sushi/" target="_blank" rel="noopener">SUSHI</a> and
+      <a href="https://fshschool.org/docs/gofsh/" target="_blank" rel="noopener">GoFSH</a> compilers
+      and exposes them over HTTP. It compiles FSH source into FHIR JSON resources and
+      vice-versa, so that authoring tools (such as TermX) can offer FSH editing without
+      bundling Node toolchains in the browser.
+    </p>
+    <p>
+      The <strong>V2 API</strong> accepts the source content as the raw request body
+      (no JSON envelope) and reads compiler options from the <code>Content-Type</code> header,
+      which makes it convenient to pipe a <code>.fsh</code> or <code>.json</code> file directly
+      from <code>curl</code> or any HTTP client.
+    </p>
+  </section>
+
+  <section>
+    <h2>Endpoints</h2>
+    <table>
+      <thead>
+      <tr><th>Method</th><th>Path</th><th>Purpose</th></tr>
+      </thead>
+      <tbody>
+      <tr><td>GET</td><td><span class="endpoint">/health</span></td><td>Liveness probe</td></tr>
+      <tr><td>POST</td><td><span class="endpoint">/v2/fsh2fhir</span> <span class="badge">V2</span></td><td>Compile FSH &rarr; FHIR JSON</td></tr>
+      <tr><td>POST</td><td><span class="endpoint">/v2/fhir2fsh</span> <span class="badge">V2</span></td><td>Decompile FHIR JSON &rarr; FSH</td></tr>
+      <tr><td>POST</td><td><span class="endpoint">/fsh2fhir</span></td><td>Legacy JSON-envelope FSH &rarr; FHIR</td></tr>
+      <tr><td>POST</td><td><span class="endpoint">/fhir2fsh</span></td><td>Legacy JSON-envelope FHIR &rarr; FSH</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>V2 API &mdash; FSH to FHIR</h2>
+    <p>
+      <code>POST /v2/fsh2fhir</code> accepts the FSH document as the request body.
+      Compiler options ride on the <code>Content-Type</code> header
+      (<code>application/fsh; key=value; ...</code>).
+    </p>
+    <h3>Supported options</h3>
+    <ul>
+      <li><code>canonical</code> &mdash; canonical URL base</li>
+      <li><code>version</code> &mdash; package version</li>
+      <li><code>fhirVersion</code> &mdash; FHIR version (e.g. <code>5.0.0</code>)</li>
+      <li><code>logLevel</code> &mdash; <code>silly | debug | verbose | http | info | warn | error | silent</code></li>
+      <li><code>snapshot</code> &mdash; boolean, include snapshot in output</li>
+    </ul>
+    <h3>Example</h3>
+<pre><code>curl -X POST http://localhost:3000/v2/fsh2fhir \
+  -H 'Content-Type: application/fsh; version=0.0.1; fhirVersion=5.0.0' \
+  --data-binary $'Profile: MyPatient\nParent: Patient\n* name 1..1'</code></pre>
+  </section>
+
+  <section>
+    <h2>V2 API &mdash; FHIR to FSH</h2>
+    <p>
+      <code>POST /v2/fhir2fsh</code> accepts a FHIR resource (or array of resources) as the
+      request body, with options on the <code>Content-Type</code> header
+      (<code>application/fhir+json; key=value; ...</code>). The response is plain
+      <code>application/fsh</code>.
+    </p>
+    <h3>Supported options</h3>
+    <ul>
+      <li><code>logLevel</code> &mdash; <code>silly | debug | verbose | http | info | warn | error | silent</code></li>
+      <li><code>indent</code> &mdash; boolean, indent rules</li>
+      <li><code>style</code> &mdash; <code>map</code> | <code>string</code></li>
+    </ul>
+    <h3>Example</h3>
+<pre><code>curl -X POST http://localhost:3000/v2/fhir2fsh \
+  -H 'Content-Type: application/fhir+json; style=map; indent=true' \
+  --data-binary @StructureDefinition-MyPatient.json</code></pre>
+  </section>
+
+  <section>
+    <h2>Health check</h2>
+    <p>
+      <code>GET /health</code> returns a JSON document with the service status and version,
+      suitable for Kubernetes/Docker health probes.
+    </p>
+<pre><code>$ curl http://localhost:3000/health
+{"status":"UP","service":"fsh-chef","version":"1.0.0"}</code></pre>
+  </section>
+</main>
+
+<footer>
+  fsh-chef &mdash; part of the <a href="https://termx.org" target="_blank" rel="noopener">TermX</a> ecosystem.
+</footer>
+</body>
+</html>
