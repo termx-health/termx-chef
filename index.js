@@ -1,4 +1,5 @@
 const express = require("express");
+const path = require("path");
 var cors = require('cors')
 
 const { fail } = require('./utils')
@@ -11,6 +12,12 @@ app.use(express.text({ type: ['application/fsh'], limit: '1000mb'}));
 const port = parseInt(process.env.PORT, 10) || 3000;
 
 app.use(cors())
+app.use(express.static(path.join(__dirname, 'public')))
+
+app.get('/health', (req, res) => {
+  res.json({status: 'UP', service: 'fsh-chef', version: require('./package.json').version})
+})
+
 app.use(fsh2fhirRouter)
 app.use(fhir2fshRouter)
 
